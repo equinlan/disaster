@@ -1,0 +1,21 @@
+#main {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+#message-input {
+    padding: 16px 0px 16px 0px;
+}
+
+#result {
+    font-weight: bold;
+}
+
+body {
+    background-color: lightgoldenrodyellow;
+    font-family: sans-serif;
+}
+
+input {
+    min-width: 320px;
+}
