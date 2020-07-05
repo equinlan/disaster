@@ -23,6 +23,12 @@ df_merged = pd.concat([df_messages, df_categories], axis=1)
 drop_features = lambda df: df.drop(columns=['id', 'original'])
 
 def get_categories(df):
+    """
+    Converts semicolon-separated categores with binary indicators into boolean categories.
+
+    Takes a dataframe.
+    Returns a dataframe with semicolon-separated values replaced with boolean categories.
+    """
     column_names = list(map(lambda s: s[:-2], df['categories'].str.split(';')[0]))
     df_dummies = df['categories'].str.split(';', expand=True).apply(lambda x: x.str[-1] == '1')
     df_dummies.columns = column_names
