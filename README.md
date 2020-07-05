@@ -49,6 +49,8 @@ This repository also contains an ML pipeline, `models/train_classifier.py`, that
 1. The SQLite database
 2. The pickled classifier
 
+For example:
+
 `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
 
 ## Web Application
