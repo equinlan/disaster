@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
-clf = pickle.load(open('app/classifier.pkl', 'rb'))
+clf = pickle.load(open('disaster_app/classifier.pkl', 'rb'))
 
 engine = create_engine('sqlite:///data/DisasterResponse.db')
 

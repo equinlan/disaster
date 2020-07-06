@@ -19,7 +19,7 @@ with open(categories_path, encoding='utf-8') as f:
 # Merge data
 df_merged = pd.concat([df_messages, df_categories], axis=1)
 
-# Transform features
+# Define feature transformations
 drop_features = lambda df: df.drop(columns=['id', 'original'])
 
 def get_categories(df):
@@ -37,8 +37,9 @@ def get_categories(df):
 
 drop_duplicates = lambda df: df.drop_duplicates()
 
-fns = [drop_features, get_categories, drop_duplicates]
-df_trans = reduce(lambda res, fn: fn(res), fns, df_merged)
+# Apply feature transformations
+fns = [drop_features, get_categories, drop_duplicates] # Ordered tranformation functions
+df_trans = reduce(lambda res, fn: fn(res), fns, df_merged) # Apply functions sequentially on df_merged
 
 # Save to an SQLite database
 engine = create_engine(f'sqlite:///{db_path}')
