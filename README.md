@@ -61,7 +61,7 @@ This repository contains a web application written in Flask that displays some v
 
 :warning: The web application will expect `classifier.pkl` in the `models` directory, and unfortunately it is too large to upload to GitHub. Please download a ZIP containing the file here:
 
-[https://drive.google.com/file/d/1II186SABUqAluIfhbogrA-8SaPb6xTr0/view?usp=sharing]
+https://drive.google.com/file/d/1II186SABUqAluIfhbogrA-8SaPb6xTr0/view?usp=sharing
 
 Once you have downloaded it, extract `classifier.pkl` to the `models` directory.
 
