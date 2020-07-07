@@ -8,27 +8,26 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
-clf = pickle.load(open('disaster_app/classifier.pkl', 'rb'))
+# Load model
+clf = pickle.load(open('models/classifier.pkl', 'rb'))
 
+# Load data
 engine = create_engine('sqlite:///data/DisasterResponse.db')
-
 with engine.connect() as connection:
     df = pd.read_sql("SELECT * FROM messages", connection)
 
-# Make first figure
-df_melted = df.drop(columns=['message', 'genre']).melt()
-df_hist1 = df_melted[df_melted['value'] == True]
-
-fig1 = json.dumps(px.histogram(df_hist1, x="variable"), cls=plotly.utils.PlotlyJSONEncoder)
-
-# Make second figure
-df_lengths = df['message'].apply(lambda message: len(message)).rename('message_length')
-df_hist2 = df_lengths[df_lengths <= 500]
-
-fig2 = json.dumps(px.histogram(df_hist2, x='message_length'), cls=plotly.utils.PlotlyJSONEncoder)
-
 @app.route('/')
 def index():
+    # Make first figure
+    df_melted = df.drop(columns=['message', 'genre']).melt()
+    df_hist1 = df_melted[df_melted['value'] == True]
+    fig1 = json.dumps(px.histogram(df_hist1, x="variable"), cls=plotly.utils.PlotlyJSONEncoder)
+
+    # Make second figure
+    df_lengths = df['message'].apply(lambda message: len(message)).rename('message_length')
+    df_hist2 = df_lengths[df_lengths <= 500]
+    fig2 = json.dumps(px.histogram(df_hist2, x='message_length'), cls=plotly.utils.PlotlyJSONEncoder)
+
     return render_template('index.html', fig1=fig1, fig2=fig2)
 @app.route('/_predict')
 def predict():

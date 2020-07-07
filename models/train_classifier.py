@@ -24,9 +24,15 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # Load data from database
-engine = create_engine(f'sqlite:///{db_path}')
-with engine.connect() as connection:
-    df = pd.read_sql_table("messages", connection)
+def load_data():
+    """
+    Load data from a database file.
+
+    Returns a DataFrame with all contents of the 'messages' table.
+    """
+    engine = create_engine(f'sqlite:///{db_path}')
+    with engine.connect() as connection:
+        return pd.read_sql_table("messages", connection)
 
 # Write a tokenization function to process text data
 def convert_pos_tag(tag):
@@ -63,27 +69,47 @@ def tokenize(text):
     return lemmatized_words
 
 # Build a machine learning model
-pipeline = Pipeline([
-    ('vect', CountVectorizer(tokenizer=tokenize, ngram_range=(1, 2))),
-    ('tfidf', TfidfTransformer()),
-    ('clf', MultiOutputClassifier(RandomForestClassifier()))
-])
+def build_model():
+    """
+    Creates a machine learning pipeline and feeds it through a grid search process.
+
+    Returns an estimator optimized with grid search.
+    """
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+    ])
+
+    parameters = {
+        "vect__ngram_range": [(1, 1), (1, 2)],
+        "clf__estimator__n_estimators": [50, 100],
+        "clf__estimator__max_features": ['sqrt', 'log2']}
+    
+    return GridSearchCV(pipeline, parameters)
+
+def evaluate_model(model):
+    """
+    Prints statistics on the trained model's performance against test data.
+
+    Takes a trained estimator.
+    """
+    # Print classification report
+    y_pred = model.predict(X_test)
+    print(classification_report(y_test, y_pred, target_names=y_test.columns))
 
 # Train model with grid search
+df = load_data()
+model = build_model()
+
 X = df['message']
 y = df.drop(columns=['message', 'genre'])
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-parameters = {
-    "vect__ngram_range": [(1, 1), (1, 2)],
-    "clf__estimator__n_estimators": [50, 100],
-    "clf__estimator__max_features": ['sqrt', 'log2']}
-cv = GridSearchCV(pipeline, parameters)
-cv.fit(X_train, y_train)
+model.fit(X_train, y_train)
 
-# Print classification report
-y_pred = cv.predict(X_test)
-print(classification_report(y_test, y_pred, target_names=y_test.columns))
+# Evaluate model
+evaluate_model(model)
 
 # Pickle model
-s = pickle.dump(cv, open(pickle_path, "wb"))
+pickle.dump(model, open(pickle_path, "wb"))

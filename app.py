@@ -43,6 +43,6 @@ def tokenize(text):
     lemmatized_words = [WordNetLemmatizer().lemmatize(word, pos=convert_pos_tag(pos)) for word, pos in pos_tagged_words]
     return lemmatized_words
 
-from app import app
+from disaster_app import app
 
 app.run(host='localhost', port=3001, debug=True)
