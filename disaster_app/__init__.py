@@ -3,7 +3,6 @@ import json, pickle, plotly, sqlite3
 import plotly.express as px
 
 from flask import Flask, jsonify, render_template, request
-from itertools import compress
 from sqlalchemy import create_engine
 
 app = Flask(__name__)
@@ -15,6 +14,45 @@ clf = pickle.load(open('models/classifier.pkl', 'rb'))
 engine = create_engine('sqlite:///data/DisasterResponse.db')
 with engine.connect() as connection:
     df = pd.read_sql("SELECT * FROM messages", connection)
+
+# Define classes
+classes = [
+    'Related',
+    'Request',
+    'Offer',
+    'Aid Related',
+    'Medical Help',
+    'Medical Products',
+    'Search and Rescue',
+    'Security',
+    'Military',
+    'Child Alone',
+    'Water',
+    'Food',
+    'Shelter',
+    'Clothing',
+    'Money',
+    'Missing People',
+    'Refugees',
+    'Death',
+    'Other Aid',
+    'Infrastructure Related',
+    'Transport',
+    'Buildings',
+    'Electricity',
+    'Tools',
+    'Hospitals',
+    'Shops',
+    'Aid Centers',
+    'Other Infrastructure',
+    'Weather Related',
+    'Floods',
+    'Storm',
+    'Fire',
+    'Earthquake',
+    'Cold',
+    'Other Weather',
+    'Direct Report']
 
 @app.route('/')
 def index():
@@ -28,46 +66,9 @@ def index():
     df_hist2 = df_lengths[df_lengths <= 500]
     fig2 = json.dumps(px.histogram(df_hist2, x='message_length'), cls=plotly.utils.PlotlyJSONEncoder)
 
-    return render_template('index.html', fig1=fig1, fig2=fig2)
+    return render_template('index.html', fig1=fig1, fig2=fig2, classes=classes)
 @app.route('/_predict')
 def predict():
     message = request.args.get('message')
-    classes = [
-        'Related',
-        'Request',
-        'Offer',
-        'Aid Related',
-        'Medical Help',
-        'Medical Products',
-        'Search and Rescue',
-        'Security',
-        'Military',
-        'Child Alone',
-        'Water',
-        'Food',
-        'Shelter',
-        'Clothing',
-        'Money',
-        'Missing People',
-        'Refugees',
-        'Death',
-        'Other Aid',
-        'Infrastructure Related',
-        'Transport',
-        'Buildings',
-        'Electricity',
-        'Tools',
-        'Hospitals',
-        'Shops',
-        'Aid Centers',
-        'Other Infrastructure',
-        'Weather Related',
-        'Floods',
-        'Storm',
-        'Fire',
-        'Earthquake',
-        'Cold',
-        'Other Weather',
-        'Direct Report']
     predictions = clf.predict([message]).tolist()
-    return jsonify(list(compress(classes, predictions[0])))
+    return jsonify(predictions[0])

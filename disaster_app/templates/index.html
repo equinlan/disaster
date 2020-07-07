@@ -14,8 +14,14 @@
             <div id="message-input">
                 <input id="message">
                 <button id="predict">Predict</button>
+                <span id="working">Working...</span>
+                <span id="no-results">No categories matched</span>
             </div>
-            <div id="result"></div>
+            <div id="results">
+                {% for c in classes %}
+                <div id="result-{{loop.index - 1}}" class="result">{{c}}</div>
+                {% endfor %}
+            </div>
 
             <h2>Data Visualization</h2>
             <h3>Frequency of Categories</h3>
@@ -36,12 +42,36 @@
         </div>
 
         <script type=text/javascript>
+            // Hide status strings
+            $("#no-results").hide()
+            $("#working").hide()
+
             $("#predict").on("click", function(event) {
-                $("#result").text("Classifying...")
+                // Reset results
+                $(".result").removeClass("selected")
+                $("#no-results").hide()
+
+                // Show working status
+                $("#working").show()
+
+                // Fetch predictions
                 $.getJSON("/_predict", {
                     message: $("#message").val()
                 }, function(data) {
-                    $("#result").text(data.length > 0 ? "Categories: " + data.join(", ") : "No categories matched");
+                    // Hide working status
+                    $("#working").hide()
+
+                    // Select matched results
+                    for (i = 0; i < data.length; i++) {
+                        if (data[i] == true) {
+                            $("#result-" + i).addClass("selected");
+                        }
+                    }
+
+                    // If no results selected, show no results status
+                    if (data.find(el => el == true) === undefined) {
+                        $("#no-results").show();
+                    }
                 });
             });
         </script>

@@ -7,8 +7,30 @@
     padding: 16px 0px 16px 0px;
 }
 
-#result {
+#no-results {
     font-weight: bold;
+}
+
+#results {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#working {
+    font-style: italic;
+}
+
+.result {
+    width: 240px;
+    border: 1px solid black;
+    text-align: center;
+    padding: 8px 0px 8px 0px;
+}
+
+.selected {
+    font-weight: bold;
+    color: green;
+    background-color: lightgreen;
 }
 
 body {
